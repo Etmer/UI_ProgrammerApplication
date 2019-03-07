@@ -8,8 +8,10 @@ using System.Drawing;
 
 namespace UI_ProgrammingApplication
 {
-    public class CustomElement
+    public class CustomElement 
     {
+        protected AppData data;
+
         public Rectangle rectangle;
         public Padding padding;
 
@@ -19,13 +21,15 @@ namespace UI_ProgrammingApplication
         public Color fontColor;
 
         public Point Center { get { return rectangle.Center(); } }
-        public Point Location { get { return rectangle.Location; } private set { rectangle.Location = value; } }
+        public Point Location { get { return rectangle.Location; } set { rectangle.Location = value; } }
 
-        public CustomElement(Rectangle ButtonRect, Padding ButtonPadding)
+        public CustomElement(Rectangle ButtonRect, Padding ButtonPadding, AppData appData)
         {
+            data = appData;
             rectangle = RectFactory.CreateRect(ButtonRect, ButtonPadding);
             padding = ButtonPadding;
         }
+
         public virtual void DrawElement(Graphics g)
         {
         }

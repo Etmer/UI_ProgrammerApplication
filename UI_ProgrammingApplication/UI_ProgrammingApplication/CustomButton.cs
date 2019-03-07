@@ -20,7 +20,7 @@ namespace UI_ProgrammingApplication
 
         public event EventHandler ButtonWasClicked;
 
-        public CustomButton(Rectangle ButtonRect, Padding ButtonPadding, Color ButtonFillColor, Color ButtonOutlineColor, Color ButtonHighlightColor,Color ButtonPressedColor) : base(ButtonRect,ButtonPadding)
+        public CustomButton(Rectangle ButtonRect, Padding ButtonPadding, AppData data, Color ButtonFillColor, Color ButtonOutlineColor, Color ButtonHighlightColor,Color ButtonPressedColor) : base(ButtonRect,ButtonPadding, data)
         {
             rectangle = RectFactory.CreateRect(ButtonRect, ButtonPadding);
             highlightingColor = ButtonHighlightColor;
@@ -53,7 +53,10 @@ namespace UI_ProgrammingApplication
         {
             SolidBrush brush = new SolidBrush(currentColor);
             g.FillRectangle(brush, rectangle);
+
             ControlPaint.DrawBorder(g, rectangle, Color.Black, ButtonBorderStyle.Solid);
+           
+
             DisplayText(g);
         }
 

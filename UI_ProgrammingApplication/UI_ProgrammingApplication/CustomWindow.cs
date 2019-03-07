@@ -9,36 +9,45 @@ using System.Windows.Forms;
 
 namespace UI_ProgrammingApplication
 {
-    public class CustomWindow
+    public class CustomWindow : CustomElement
     {
+        public bool isOpen;
         public Rectangle headerRectangle;
         public Rectangle bodyRectangle;
         public Rectangle backgroundRect;
+        private Color _backgroundColor;
 
+        int OffsetX;
+        int OffsetY;
+
+        public bool draggable;
         public float YRatio = 0.2f;
 
         public List<CustomElement> elements = new List<CustomElement>();
         public List<CustomButton> buttons = new List<CustomButton>();
 
-        public CustomWindow(Form f)
+        public CustomWindow(Rectangle Rect, Padding ButtonPadding,Point rectLocation,AppData data, Color backgroundColor) : base (Rect, ButtonPadding, data)
         {
-            CalculateWindow((int)f.ClientRectangle.Width, (int)f.ClientRectangle.Height);
+            _backgroundColor = backgroundColor;
+            backgroundRect = Rect;
+            RecalculateWindow(backgroundRect.Width, backgroundRect.Height);
         }
 
         public void AddButtonsForDebugging(string Content, int amount)
         {
             for (int i = 0; i < amount; i++)
             {
-                buttons.Add(new CustomButton(bodyRectangle,new Padding(0,0,0,0),Color.Beige,Color.Black,Color.Azure,Color.Aquamarine));
+                buttons.Add(new CustomButton(bodyRectangle,new Padding(0,0,0,0), data,Color.Beige,Color.Black,Color.Azure,Color.Aquamarine));
                 buttons[i].SetText(Content, new Font("Arial", 12), 12, Color.Black);
                 elements.Add(buttons[i]);
             }
-            ResizeWindow();
+            ResizeWindow(backgroundRect.Size);
         }
         
-        public void ResizeWindow()
+        public void ResizeWindow(Size newSize)
         {
-            CalculateElements();
+            backgroundRect.Size = newSize;
+            RecalculateWindow(newSize.Width, newSize.Height);
         }
 
         private void CalculateElements()
@@ -61,21 +70,33 @@ namespace UI_ProgrammingApplication
             return RectFactory.CreateRect(partRectangle, new Padding(10,10,10,10));
         }
 
-        public void CalculateWindow(int sizeX, int sizeY)
+        public void RecalculateWindow(int sizeX, int sizeY)
         {
-            headerRectangle = new Rectangle(0, 0, sizeX, (int)(sizeY * YRatio));
-            bodyRectangle = new Rectangle(0, headerRectangle.Bottom, sizeX, (int)(sizeY * (1 - YRatio)));
+            backgroundRect.Size = new Size(sizeX, sizeY);
+            headerRectangle.Size = new Size (sizeX, (int)(sizeY * YRatio));
+            headerRectangle.Location = backgroundRect.Location;
+            bodyRectangle.Location = new Point(headerRectangle.Left,headerRectangle.Bottom);
+            bodyRectangle.Size = new Size(sizeX, (int)(sizeY * (1 - YRatio)));
+            CalculateElements();
+        }
+
+        public void RepositionWindow(Point targetPoint)
+        {
+            Location = backgroundRect.Location = new Point(targetPoint.X + OffsetX, targetPoint.Y + OffsetY);
         }
 
         public void DrawWindow(Graphics g, int sizeX, int sizeY)
         {
-            CalculateWindow(sizeX, sizeY);
+            RecalculateWindow(sizeX, sizeY);
+            DrawBackGround(g);
             DrawHeader(g);
             DrawBody(g);
         }
 
         private void DrawHeader(Graphics g)
         {
+            SolidBrush brush = new SolidBrush(Color.White);
+            g.FillRectangle(brush, headerRectangle);
             ControlPaint.DrawBorder(g, headerRectangle, Color.Black, ButtonBorderStyle.Solid);
             DisplayText(headerRectangle, "Christopher Etmer UI", g);
         }
@@ -122,6 +143,33 @@ namespace UI_ProgrammingApplication
             for (int y = 0; y < buttons.Count; y++)
             {
                 
+            }
+        }
+
+        public override void DrawElement(Graphics g)
+        {
+            DrawWindow(g, backgroundRect.Width, backgroundRect.Height);
+        }
+
+        public void Open(bool state)
+        {
+            isOpen = state;
+        }
+
+        private void DrawBackGround(Graphics g)
+        {
+            SolidBrush brush = new SolidBrush(_backgroundColor);
+            g.FillRectangle(brush, backgroundRect);
+            ControlPaint.DrawBorder(g, backgroundRect, Color.Black, ButtonBorderStyle.Solid);
+        }
+
+        public void BecomeDraggable(bool state, Point Offset)
+        {
+            draggable = state;
+            if (state)
+            {
+                OffsetX = Location.X - Offset.X;
+                OffsetY = Location.Y - Offset.Y;
             }
         }
     }

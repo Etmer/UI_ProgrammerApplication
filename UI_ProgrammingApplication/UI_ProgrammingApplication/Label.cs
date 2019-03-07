@@ -10,7 +10,7 @@ namespace UI_ProgrammingApplication
 {
     public class CustomLabel : CustomElement
     {
-        public CustomLabel(Rectangle ButtonRect, Padding ButtonPadding, string content): base(ButtonRect,ButtonPadding)
+        public CustomLabel(Rectangle ButtonRect, Padding ButtonPadding, AppData data, string content): base(ButtonRect, ButtonPadding, data)
         {
             rectangle = RectFactory.CreateRect(ButtonRect, ButtonPadding);
             padding = ButtonPadding;
